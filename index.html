@@ -1,14 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic tac toe</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
 
-    <link rel="stylesheet" href="style.css">
-    <script defer src="script.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
 </head>
 <body>
-    <h1>Tic tac toe</h1>
+  <header>
+    <h1>Tic Tac Toe</h1>
+  </header>
+
+  <section class="start-screen" id="startScreen">
+    <form id="playerInput">
+      <fieldset>
+        <legend>Number of players</legend>
+
+        <label for="cantPlayer1">
+          <input type="radio" name="cantPlayer" id="cantPlayer1" value="1">
+          1 Player
+        </label>
+
+        <label for="cantPlayer2">
+          <input type="radio" name="cantPlayer" id="cantPlayer2" value="2" checked>
+          2 Players
+        </label>
+      </fieldset>
+
+      <label for="player1">Player 1</label>
+      <input type="text" id="player1" name="player1" placeholder="name" required>
+
+      <div id="player2Field">
+          <label for="player2">Player 2</label>
+          <input type="text" id="player2" name="player2" placeholder="name">
+      </div>
+      <p id="computerNotice" class="hidden">Opponent: Computer</p>
+
+      <button type="submit">Start Game</button>
+    </form>
+  </section>
+
+  <section class="game-screen hidden" id="gameScreen">
+    <div class="info-players">
+      <div class="player-info">
+        <h2 id="player1Name">Player 1</h2>
+        <p>Score: <span id="player1Score">0</span></p>
+      </div>
+
+      <div class="turn-info">
+        <p id="turnMessage">Player 1's turn</p>
+      </div>
+
+      <div class="player-info">
+        <h2 id="player2Name">Player 2</h2>
+        <p>Score: <span id="player2Score">0</span></p>
+      </div>
+    </div>
+
+    <div class="game-board" id="gameBoard"></div>
+  </section>
+
+  <section class="modal hidden" id="winnerModal">
+    <div class="modal-content">
+      <h2 id="winnerMessage">Winner!</h2>
+      <button id="playAgainBtn">Play again!</button>
+    </div>
+  </section>
 </body>
 </html>

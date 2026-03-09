@@ -45,7 +45,250 @@ h6 {
   overflow-wrap: break-word;
 }
 
-#root,
-#__next {
-  isolation: isolate;
+:root {
+  --bg: #f6f1d1;
+  --panel: #fff9db;
+  --panel-dark: #e9dfae;
+  --text: #2c2416;
+  --accent: #c94c4c;
+  --accent-dark: #8f2f2f;
+  --blue: #4d6fd3;
+  --green: #4f8a5b;
+  --border: #2c2416;
+  --shadow: 4px 4px 0 var(--border);
+  --radius: 0px;
+  --spacing: 1rem;
+}
+
+body {
+  font-family: "Courier New", Courier, monospace;
+  background-color: var(--bg);
+  color: var(--text);
+  padding: 1.5rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+header {
+  max-width: 900px;
+  margin: 0 auto 2rem;
+  text-align: center;
+}
+
+h1 {
+  display: inline-block;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.5rem 1rem;
+  background-color: var(--accent);
+  color: #fff8e7;
+  border: 3px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+section {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.start-screen {
+  display: flex;
+  justify-content: center;
+}
+
+#playerInput {
+  width: min(100%, 460px);
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  background-color: var(--panel);
+  border: 3px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+fieldset {
+  border: 3px solid var(--border);
+  padding: 1rem;
+  display: grid;
+  gap: 0.75rem;
+  background-color: var(--panel-dark);
+}
+
+legend {
+  padding: 0 0.4rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+label {
+  font-weight: 700;
+}
+
+fieldset label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+}
+
+input[type="text"] {
+  width: 100%;
+  border: 3px solid var(--border);
+  background-color: #fffef2;
+  color: var(--text);
+  padding: 0.75rem;
+  outline: none;
+}
+
+input[type="text"]:focus {
+  background-color: #ffffff;
+  border-color: var(--blue);
+}
+
+input[type="radio"] {
+  accent-color: var(--accent);
+  transform: scale(1.15);
+}
+
+#computerNotice {
+  padding: 0.75rem 1rem;
+  background-color: #e5f3e8;
+  border: 3px solid var(--border);
+  color: var(--green);
+  font-weight: 700;
+}
+
+button {
+  border: 3px solid var(--border);
+  background-color: var(--accent);
+  color: #fff8e7;
+  padding: 0.85rem 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+button:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 3px 3px 0 var(--border);
+}
+
+button:active {
+  transform: translate(4px, 4px);
+  box-shadow: none;
+}
+
+.game-screen {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.info-players {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.player-info,
+.turn-info {
+  border: 3px solid var(--border);
+  box-shadow: var(--shadow);
+  background-color: var(--panel);
+  padding: 1rem;
+}
+
+.player-info h2,
+.turn-info p {
+  text-transform: uppercase;
+}
+
+.player-info h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.35rem;
+}
+
+.player-info p,
+.turn-info p {
+  font-weight: 700;
+}
+
+.turn-info {
+  display: grid;
+  place-items: center;
+  min-width: 180px;
+  text-align: center;
+  background-color: var(--panel-dark);
+}
+
+.game-board {
+  width: min(100%, 420px);
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background-color: var(--border);
+  border: 3px solid var(--border);
+  box-shadow: 6px 6px 0 var(--border);
+}
+
+.game-cell {
+  border: 3px solid var(--border);
+  background-color: #fffef2;
+  display: grid;
+  place-items: center;
+  font-size: clamp(2rem, 7vw, 4rem);
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  aspect-ratio: 1 / 1;
+  transition: transform 0.08s ease, background-color 0.08s ease;
+}
+
+.game-cell:hover {
+  background-color: #f3ebc6;
+}
+
+.game-cell:active {
+  transform: scale(0.98);
+}
+
+.game-cell.x-mark {
+  color: var(--accent);
+}
+
+.game-cell.o-mark {
+  color: var(--blue);
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(44, 36, 22, 0.72);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.modal-content {
+  width: min(100%, 420px);
+  background-color: var(--panel);
+  border: 4px solid var(--border);
+  box-shadow: 8px 8px 0 var(--border);
+  padding: 1.5rem;
+  display: grid;
+  gap: 1rem;
+  text-align: center;
+}
+
+.modal-content h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  text-transform: uppercase;
 }
