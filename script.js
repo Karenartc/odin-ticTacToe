@@ -43,17 +43,24 @@ function GameController(){
              let succes = gameBoard.placeMark(index, currentPlayer.getMark());
             if(succes) {
                 let isWinner = checkWinner();
-                let isTie = checkTie();
 
                 if (isWinner){
                     winner = currentPlayer;
                     console.log(winner.getName());
                     isGameOver = true;
-                } else if(isTie){
-                    isGameOver = true;
-                }else{
-                    currentPlayer = switchPlayer(currentPlayer);
+
+                } else{
+                    let isTie = checkTie();
+
+                    if(isTie){
+                        console.log('tie');
+                        isGameOver = true;
+                        
+                    } else {
+                        currentPlayer = switchPlayer(currentPlayer);
+                    }   
                 }
+                    
             };
         }
         
@@ -78,7 +85,14 @@ function GameController(){
         return false;
     };
 
-    const checkTie = () => {};
+    const checkTie = () => {
+        let currentBoard = gameBoard.getBoard();
+        if(currentBoard.every(cell => cell !== '')){
+            return true;
+        } else {
+            return false;
+        }
+    };
     
     const restart = () => {
         gameBoard.resetGameBoard();
@@ -91,11 +105,16 @@ function GameController(){
 }
 
 const game = GameController();
-game.playTurn(0); 
-game.playTurn(5);
-game.playTurn(4); 
-game.playTurn(3);
-game.playTurn(7); 
-game.playTurn(2); 
-game.playTurn(8);  
+game.playTurn(0); // X
+game.playTurn(1); // O
+game.playTurn(2); // X
+game.playTurn(5); // O
+game.playTurn(3); // X
+game.playTurn(4); // O
+game.playTurn(7); // X
+game.playTurn(6); // O
+game.playTurn(8); // X
+console.log(game.getBoard());
+
+game.restart();
 console.log(game.getBoard());
