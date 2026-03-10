@@ -28,8 +28,10 @@ function Player(playerName, playerMark){
 }
 
 function GameController(player1Name, player2Name){
-    const player1 = Player(player1Name, "X");
-    const player2 = Player(player2Name ?? "robot", "O");
+    const player1 = Player(player1Name, 'X');
+    const player2 = Player(player2Name || 'robot', 'O');
+    console.log(player1.getName());
+    console.log(player2.getName());
     const gameBoard = GameBoard();
 
     let currentPlayer = player1;
@@ -106,3 +108,48 @@ function GameController(player1Name, player2Name){
 
     return {getBoard, getCurrentPlayer, getIsGameOver, getWinner, playTurn, switchPlayer, checkWinner, checkTie, restart};
 }
+
+function DisplayController(){
+    const startScreen = document.querySelector('#startScreen');
+    const gameScreen = document.querySelector('#gameScreen');
+    const board = document.querySelector('#gameBoard');
+    const form = document.querySelector('#playerInput');
+    const cantPlayer1Input = document.querySelector('#cantPlayer1');
+    const cantPlayer2Input = document.querySelector('#cantPlayer2');
+    const player2InputField = document.querySelector('#player2Field');
+    const player1Input = document.querySelector('#player1');
+    const player2Input = document.querySelector('#player2');
+
+    let game;
+
+    const handleStartGame = (e) => { 
+        e.preventDefault();
+        let player1Name = (player1Input.value).trim();
+        let player2Name = (player2Input.value).trim();
+
+        startScreen.classList.add('hidden');
+        gameScreen.classList.remove('hidden');
+
+        game = GameController(player1Name, player2Name);
+        renderBoard();
+    };
+
+    const handleCantPlayers = () => {
+        if(cantPlayer1Input.checked){
+            player2InputField.classList.add('hidden');
+            player2Input.value = '';
+        }else if(cantPlayer2Input.checked){
+            player2InputField.classList.remove('hidden');
+        }
+     };
+
+    const renderBoard = () => {
+        
+     };
+
+    form.addEventListener('submit', handleStartGame);
+    cantPlayer1Input.addEventListener('change', handleCantPlayers);
+    cantPlayer2Input.addEventListener('change', handleCantPlayers);
+}
+
+DisplayController();
