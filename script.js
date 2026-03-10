@@ -27,9 +27,9 @@ function Player(playerName, playerMark){
     return {getName, getMark};
 }
 
-function GameController(){
-    const player1 = Player('player 1', 'X');
-    const player2 = Player('player 2', 'O');
+function GameController(player1Name, player2Name){
+    const player1 = Player(player1Name, "X");
+    const player2 = Player(player2Name ?? "robot", "O");
     const gameBoard = GameBoard();
 
     let currentPlayer = player1;
@@ -37,6 +37,9 @@ function GameController(){
     let winner = null;
 
     const getBoard = () => gameBoard.getBoard();
+    const getCurrentPlayer = () => currentPlayer;
+    const getWinner = () => winner;
+    const getIsGameOver = () => isGameOver;
 
     const playTurn = (index) => {
         if(!isGameOver){
@@ -101,20 +104,5 @@ function GameController(){
         winner = null;
     };
 
-    return {getBoard, playTurn, switchPlayer, checkWinner, checkTie, restart};
+    return {getBoard, getCurrentPlayer, getIsGameOver, getWinner, playTurn, switchPlayer, checkWinner, checkTie, restart};
 }
-
-const game = GameController();
-game.playTurn(0); // X
-game.playTurn(1); // O
-game.playTurn(2); // X
-game.playTurn(5); // O
-game.playTurn(3); // X
-game.playTurn(4); // O
-game.playTurn(7); // X
-game.playTurn(6); // O
-game.playTurn(8); // X
-console.log(game.getBoard());
-
-game.restart();
-console.log(game.getBoard());
