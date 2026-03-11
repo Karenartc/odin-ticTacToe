@@ -42,6 +42,15 @@ function GameController(player1Name, player2Name){
     const getIsGameOver = () => isGameOver;
     const getIsTie = () => checkTie();
 
+    const isRobotGame = () => player2.getName().toLowerCase() === 'robot';
+
+    const getAvailableMoves = () => {
+        const currentBoard = gameBoard.getBoard();
+        return currentBoard
+            .map((cell, index) => cell === '' ? index : null)
+            .filter(index => index !== null);
+    };
+
     const playTurn = (index) => {
         if(!isGameOver){
              let succes = gameBoard.placeMark(index, currentPlayer.getMark());
@@ -102,7 +111,19 @@ function GameController(player1Name, player2Name){
         winner = null;
     };
 
-    return {getBoard, getCurrentPlayer, getIsGameOver, getWinner, getIsTie, playTurn, switchPlayer, checkWinner, checkTie, restart};
+    return {
+        getBoard, 
+        getCurrentPlayer, 
+        getIsGameOver, 
+        getWinner, 
+        getIsTie,
+        isRobotGame,
+        getAvailableMoves,
+        playTurn, 
+        switchPlayer, 
+        checkWinner, 
+        checkTie, 
+        restart};
 }
 
 function DisplayController(){
@@ -175,24 +196,34 @@ function DisplayController(){
         playerTurnMessage.textContent = currentPlayerName + "'s turn";
     }
 
+    const updateGameStateUI = () => {
+        if (game.getIsGameOver()) {
+            modal.classList.remove('hidden');
+
+            if (game.getWinner()) {
+                modalMessage.textContent = game.getWinner().getName() + ' Won!';
+            } else {
+                modalMessage.textContent = "It's a Tie!";
+            }
+
+            return true;
+        }
+
+        renderTurn();
+        return false;   
+    };
+
     const handleCellClick = (clickIndex) => {
         game.playTurn(clickIndex);
         renderBoard();
 
-        if(game.getIsGameOver()){
-            if (game.getWinner()){
-                let gameWinner = game.getWinner();
-                modal.classList.remove('hidden');
-                modalMessage.textContent = gameWinner.getName() + ' Won!';
+        const gameFinished = updateGameStateUI();
+        if (gameFinished) return;
 
-            } else if (game.getIsTie()){
-                modal.classList.remove('hidden');
-                modalMessage.textContent = "It's a Tie!";
-            }
-        } else {
-            renderTurn();
+        if (game.isRobotGame() && game.getCurrentPlayer().getName().toLowerCase() === 'robot') {
+            setTimeout(handleRobotMove, 400);
         }
-    }
+    };
 
     const handleModalBtn = () => {
         modal.classList.add('hidden');
@@ -200,6 +231,20 @@ function DisplayController(){
         renderBoard();
         renderTurn()
     }
+
+    const handleRobotMove = () => {
+        if (!game.isRobotGame()) return;
+        if (game.getIsGameOver()) return;
+        if (game.getCurrentPlayer().getName().toLowerCase() !== 'robot') return;
+
+        const availableMoves = game.getAvailableMoves();
+        const randomIndex = Math.floor(Math.random() * availableMoves.length);
+        const robotMove = availableMoves[randomIndex];
+
+        game.playTurn(robotMove);
+        renderBoard();
+        updateGameStateUI();
+    };
 
     form.addEventListener('submit', handleStartGame);
     cantPlayer1Input.addEventListener('change', handleCantPlayers);
