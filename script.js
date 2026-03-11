@@ -137,14 +137,20 @@ function DisplayController(){
     
     const gameScreen = document.querySelector('#gameScreen');
     const playerTurnMessage = document.querySelector('#turnMessage');
-    const player1NameDisplay = document.querySelector('#player1Name');
     const player2NameDisplay = document.querySelector('#player2Name');
+    const player1ScoreDisplay = document.querySelector('#player1Score');
+    const player1NameDisplay = document.querySelector('#player1Name');
+    const player2ScoreDisplay = document.querySelector('#player2Score');
 
     const board = document.querySelector('#gameBoard');
 
     const modal = document.querySelector('#winnerModal');
     const modalMessage = document.querySelector('#winnerMessage');
     const modalBtn = document.querySelector('#playAgainBtn');
+
+    let player1Score = 0;
+    let player2Score = 0;
+    const maxScore = 3;
 
     let game;
 
@@ -158,6 +164,7 @@ function DisplayController(){
 
         game = GameController(player1Name, player2Name);
         renderPlayerNames(player1Name, player2Name);
+        renderScores();
         renderTurn();
         renderBoard();
     };
@@ -166,7 +173,7 @@ function DisplayController(){
         if(cantPlayer1Input.checked){
             player2InputField.classList.add('hidden');
             player2Input.value = '';
-        }else if(cantPlayer2Input.checked){
+        } else if(cantPlayer2Input.checked){
             player2InputField.classList.remove('hidden');
         }
     };
@@ -179,38 +186,92 @@ function DisplayController(){
             let cellDiv = document.createElement('div');
             cellDiv.classList.add('game-cell');
             cellDiv.dataset.index = cellIndex;
-            board.appendChild(cellDiv);
             cellDiv.textContent = cellValue;
 
             cellDiv.addEventListener('click', () => handleCellClick(cellIndex));
+            board.appendChild(cellDiv);
         });
     };
 
     const renderPlayerNames = (player1Name, player2Name) => {
-        player1NameDisplay.textContent = player1Name;
+        player1NameDisplay.textContent = player1Name || 'Player 1';
         player2NameDisplay.textContent = player2Name || 'Robot';
-    }
+    };
+
+    const renderScores = () => {
+        player1ScoreDisplay.textContent = player1Score;
+        player2ScoreDisplay.textContent = player2Score;
+    };
 
     const renderTurn = () => {
         let currentPlayerName = game.getCurrentPlayer().getName();
         playerTurnMessage.textContent = currentPlayerName + "'s turn";
-    }
+    };
+
+    const updateScore = (winnerName) => {
+        if (winnerName === player1NameDisplay.textContent) {
+            player1Score++;
+        } else if (winnerName === player2NameDisplay.textContent) {
+            player2Score++;
+        }
+    };
+
+    const hasMatchWinner = () => {
+        return player1Score === maxScore || player2Score === maxScore;
+    };
+
+    const resetRound = () => {
+        game.restart();
+        renderBoard();
+        renderTurn();
+    };
+
+    const resetMatch = () => {
+        player1Score = 0;
+        player2Score = 0;
+        renderScores();
+
+        modal.classList.add('hidden');
+        game.restart();
+        renderBoard();
+        renderTurn();
+    };
 
     const updateGameStateUI = () => {
-        if (game.getIsGameOver()) {
-            modal.classList.remove('hidden');
+        if (!game.getIsGameOver()) {
+            renderTurn();
+            return false;
+        }
 
-            if (game.getWinner()) {
-                modalMessage.textContent = game.getWinner().getName() + ' Won!';
-            } else {
-                modalMessage.textContent = "It's a Tie!";
+        if (game.getWinner()) {
+            const winnerName = game.getWinner().getName();
+            updateScore(winnerName);
+            renderScores();
+
+            if (hasMatchWinner()) {
+                modal.classList.remove('hidden');
+                modalMessage.textContent = winnerName + ' Won the Match!';
+                return true;
             }
+
+            playerTurnMessage.textContent = winnerName + ' won this round!';
+            setTimeout(() => {
+                resetRound();
+            }, 2000);
 
             return true;
         }
 
-        renderTurn();
-        return false;   
+        if (game.getIsTie()) {
+            playerTurnMessage.textContent = "It's a tie!";
+            setTimeout(() => {
+                resetRound();
+            }, 2000);
+
+            return true;
+        }
+
+        return false;
     };
 
     const handleCellClick = (clickIndex) => {
@@ -224,13 +285,6 @@ function DisplayController(){
             setTimeout(handleRobotMove, 400);
         }
     };
-
-    const handleModalBtn = () => {
-        modal.classList.add('hidden');
-        game.restart();
-        renderBoard();
-        renderTurn()
-    }
 
     const handleRobotMove = () => {
         if (!game.isRobotGame()) return;
@@ -246,10 +300,16 @@ function DisplayController(){
         updateGameStateUI();
     };
 
+    const handleModalBtn = () => {
+        resetMatch();
+    };
+
     form.addEventListener('submit', handleStartGame);
     cantPlayer1Input.addEventListener('change', handleCantPlayers);
     cantPlayer2Input.addEventListener('change', handleCantPlayers);
     modalBtn.addEventListener('click', handleModalBtn);
+
+    handleCantPlayers();
 }
 
 DisplayController();
