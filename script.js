@@ -30,8 +30,6 @@ function Player(playerName, playerMark){
 function GameController(player1Name, player2Name){
     const player1 = Player(player1Name, 'X');
     const player2 = Player(player2Name || 'robot', 'O');
-    console.log(player1.getName());
-    console.log(player2.getName());
     const gameBoard = GameBoard();
 
     let currentPlayer = player1;
@@ -42,6 +40,7 @@ function GameController(player1Name, player2Name){
     const getCurrentPlayer = () => currentPlayer;
     const getWinner = () => winner;
     const getIsGameOver = () => isGameOver;
+    const getIsTie = () => checkTie();
 
     const playTurn = (index) => {
         if(!isGameOver){
@@ -51,14 +50,12 @@ function GameController(player1Name, player2Name){
 
                 if (isWinner){
                     winner = currentPlayer;
-                    console.log(winner.getName());
                     isGameOver = true;
 
                 } else{
                     let isTie = checkTie();
 
                     if(isTie){
-                        console.log('tie');
                         isGameOver = true;
                         
                     } else {
@@ -82,7 +79,6 @@ function GameController(player1Name, player2Name){
         for(let i = 0; i < winningMoves.length; i++){
             let [first, second, third] = winningMoves[i];
             if(currentBoard[first] !== '' && (currentBoard[first] === currentBoard[second] && currentBoard[second] === currentBoard[third])){
-                console.log([first, second, third]);
                 return true;
             }             
         }
@@ -106,19 +102,28 @@ function GameController(player1Name, player2Name){
         winner = null;
     };
 
-    return {getBoard, getCurrentPlayer, getIsGameOver, getWinner, playTurn, switchPlayer, checkWinner, checkTie, restart};
+    return {getBoard, getCurrentPlayer, getIsGameOver, getWinner, getIsTie, playTurn, switchPlayer, checkWinner, checkTie, restart};
 }
 
 function DisplayController(){
     const startScreen = document.querySelector('#startScreen');
-    const gameScreen = document.querySelector('#gameScreen');
-    const board = document.querySelector('#gameBoard');
     const form = document.querySelector('#playerInput');
     const cantPlayer1Input = document.querySelector('#cantPlayer1');
     const cantPlayer2Input = document.querySelector('#cantPlayer2');
     const player2InputField = document.querySelector('#player2Field');
     const player1Input = document.querySelector('#player1');
     const player2Input = document.querySelector('#player2');
+    
+    const gameScreen = document.querySelector('#gameScreen');
+    const playerTurnMessage = document.querySelector('#turnMessage');
+    const player1NameDisplay = document.querySelector('#player1Name');
+    const player2NameDisplay = document.querySelector('#player2Name');
+
+    const board = document.querySelector('#gameBoard');
+
+    const modal = document.querySelector('#winnerModal');
+    const modalMessage = document.querySelector('#winnerMessage');
+    const modalBtn = document.querySelector('#playAgainBtn');
 
     let game;
 
@@ -131,6 +136,8 @@ function DisplayController(){
         gameScreen.classList.remove('hidden');
 
         game = GameController(player1Name, player2Name);
+        renderPlayerNames(player1Name, player2Name);
+        renderTurn();
         renderBoard();
     };
 
@@ -141,15 +148,63 @@ function DisplayController(){
         }else if(cantPlayer2Input.checked){
             player2InputField.classList.remove('hidden');
         }
-     };
+    };
 
     const renderBoard = () => {
-        
-     };
+        let theBoardGame = game.getBoard();
+        board.innerHTML = '';
+
+        theBoardGame.forEach((cellValue, cellIndex) => {
+            let cellDiv = document.createElement('div');
+            cellDiv.classList.add('game-cell');
+            cellDiv.dataset.index = cellIndex;
+            board.appendChild(cellDiv);
+            cellDiv.textContent = cellValue;
+
+            cellDiv.addEventListener('click', () => handleCellClick(cellIndex));
+        });
+    };
+
+    const renderPlayerNames = (player1Name, player2Name) => {
+        player1NameDisplay.textContent = player1Name;
+        player2NameDisplay.textContent = player2Name || 'Robot';
+    }
+
+    const renderTurn = () => {
+        let currentPlayerName = game.getCurrentPlayer().getName();
+        playerTurnMessage.textContent = currentPlayerName + "'s turn";
+    }
+
+    const handleCellClick = (clickIndex) => {
+        game.playTurn(clickIndex);
+        renderBoard();
+
+        if(game.getIsGameOver()){
+            if (game.getWinner()){
+                let gameWinner = game.getWinner();
+                modal.classList.remove('hidden');
+                modalMessage.textContent = gameWinner.getName() + ' Won!';
+
+            } else if (game.getIsTie()){
+                modal.classList.remove('hidden');
+                modalMessage.textContent = "It's a Tie!";
+            }
+        } else {
+            renderTurn();
+        }
+    }
+
+    const handleModalBtn = () => {
+        modal.classList.add('hidden');
+        game.restart();
+        renderBoard();
+        renderTurn()
+    }
 
     form.addEventListener('submit', handleStartGame);
     cantPlayer1Input.addEventListener('change', handleCantPlayers);
     cantPlayer2Input.addEventListener('change', handleCantPlayers);
+    modalBtn.addEventListener('click', handleModalBtn);
 }
 
 DisplayController();
